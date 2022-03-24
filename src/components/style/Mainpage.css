@@ -1,0 +1,5 @@
+.mainpage {
+  display: flex;
+  background-color: rgb(18, 18, 18);
+  justify-content: center;
+}

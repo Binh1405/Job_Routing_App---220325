@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import SearchAppBar from "./components/Navbar";
+import Homepage from "./pages/Homepage";
+import { Route, Routes } from "react-router-dom";
+import Mainpage from "./components/Mainpage";
+import JobPage from "./pages/JobPage";
+// import Layout from "./pages/Layout";
+import LoginPage from "./pages/LoginPage";
+import AuthProvider from "./context/AuthProvider";
+import Layout from "./pages/Layout";
+import RequireAuth from "./helper/RequireAuth";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <SearchAppBar />
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Homepage />}>
+            <Route index element={<Mainpage />} />
+          </Route>
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/jobs/:jobId"
+          element={
+            <RequireAuth>
+              <JobPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <main style={{ padding: "1rem" }}>
+              <p>There's nothing here!</p>
+            </main>
+          }
+        />
+      </Routes>
+    </AuthProvider>
   );
 }
 

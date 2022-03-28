@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import Mainpage from "../components/Mainpage";
 import { Outlet } from "react-router-dom";
+import SearchAppBar from "../components/Navbar";
 
 const Homepage = () => {
   return (
     <>
-      <Mainpage />
+      <SearchAppBar />
       <Outlet />;
     </>
   );

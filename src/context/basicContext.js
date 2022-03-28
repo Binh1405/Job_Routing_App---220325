@@ -1,3 +1,95 @@
-import { createContext } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 
-export const AuthContext = createContext(null);
+const initialState = {
+  isAuthenticated: false,
+  isInitialized: false,
+  user: null,
+};
+
+const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+const LOGOUT = "LOGOUT";
+const INITIALIZE = "INITIALIZE";
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case INITIALIZE:
+      const { isAuthenticated, user } = action.payload;
+      return {
+        ...state,
+        isAuthenticated,
+        isInitialized: true,
+        user,
+      };
+    case LOGIN_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
+        user: action.payload.user,
+      };
+    case LOGOUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: null,
+      };
+    default:
+      return state;
+  }
+};
+
+const AuthContext = createContext({ ...initialState });
+
+function AuthProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const username = window.localStorage.getItem("username");
+        if (username) {
+          dispatch({
+            type: INITIALIZE,
+            payload: { isAuthenticated: true, user: { username } },
+          });
+        } else {
+          dispatch({
+            type: INITIALIZE,
+            payload: { isAuthenticated: false, user: null },
+          });
+        }
+      } catch (error) {
+        console.log("error", error);
+        dispatch({
+          type: INITIALIZE,
+          payload: {
+            isAuthenticated: false,
+            user: null,
+          },
+        });
+      }
+    };
+    console.log("new user", state);
+    initialize();
+  }, []);
+
+  let signin = async (username, callback) => {
+    window.localStorage.setItem("username", username);
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: { user: { username } },
+    });
+    callback();
+  };
+  let signout = async (callback) => {
+    window.localStorage.removeItem("username");
+    dispatch({ type: LOGOUT });
+    callback();
+  };
+
+  return (
+    <AuthContext.Provider value={{ ...state, signin, signout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export { AuthContext, AuthProvider };

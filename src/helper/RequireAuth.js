@@ -1,12 +1,15 @@
-import { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../context/basicContext";
+import LoadingScreen from "../components/LoadingScreen";
+import useAuth from "../hook/useAuth";
 
 function RequireAuth({ children }) {
-  let auth = useContext(AuthContext);
+  const { isAuthenticated, isInitialized } = useAuth();
   let location = useLocation();
 
-  if (!auth.user) {
+  if (!isInitialized) {
+    return <LoadingScreen />;
+  }
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

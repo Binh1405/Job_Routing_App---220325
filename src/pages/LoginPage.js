@@ -14,9 +14,8 @@ import { LoadingButton } from "@mui/lab";
 import { FormProvider, FCheckBox, FTextField } from "../components/form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { AuthContext } from "../context/basicContext";
-import fakeAuthProvider from "../helper/auth";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAuth from "../hook/useAuth";
 
 const LoginPage = () => {
   const schema = yup.object({
@@ -38,12 +37,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   let from = location.state?.from?.pathname || "/";
-  const auth = useContext(AuthContext);
+  const auth = useAuth();
   console.log("auth", auth);
-  const onSubmit = (data) => {
-    console.log("data", data);
-    auth.signin(data.username, data.password, () => {
-      navigate(from);
+  const onSubmit = async (data) => {
+    let username = data.username;
+    auth.signin(username, () => {
+      // navigate(from, { replace: true });
+      navigate(from, { replace: true });
     });
     setError("afterSubmit", { message: "Server Response Error" });
   };

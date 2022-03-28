@@ -7,13 +7,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import JobPage from "./pages/JobPage";
 import Mainpage from "./components/Mainpage";
+import { AuthProvider } from "../src/context/basicContext";
 
 ReactDOM.render(
-  <React.StrictMode>
+  <AuthProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
+  </AuthProvider>,
   document.getElementById("root")
 );
 
